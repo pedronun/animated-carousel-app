@@ -1,12 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { useRef } from "react";
-import {
-  Animated,
-  Dimensions,
-  Image,
-  StyleSheet,
-  View
-} from "react-native";
+import { Animated, Dimensions, Image, StyleSheet, View } from "react-native";
 const { width } = Dimensions.get("screen");
 
 const data = [
@@ -65,6 +59,9 @@ export default function App() {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
+        snapToInterval={width}
+        decelerationRate={"fast"}
+        bounces={false}
         renderItem={({ item }) => {
           return (
             <View style={styles.itemWrapper}>
@@ -73,6 +70,26 @@ export default function App() {
           );
         }}
       />
+      <View style={styles.pagination}>
+        {data.map((_, index) => (
+          <View key={index} style={styles.dot} />
+        ))}
+        <Animated.View
+          style={[
+            styles.dotIndicator,
+            {
+              transform: [
+                {
+                  translateX: Animated.divide(imageRef, width).interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 24],
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
+      </View>
     </View>
   );
 }
@@ -87,7 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOpacity: .5,
+    shadowOpacity: 0.5,
     shadowRadius: 20,
   },
   itemImage: {
@@ -95,9 +112,28 @@ const styles = StyleSheet.create({
     height: imageH,
     resizeMode: "cover",
     borderRadius: 16,
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
+  },
+  pagination: {
+    flexDirection: "row",
+    height: 16,
+    alignSelf: "center",
+    position: "absolute",
+    bottom: 170,
+    gap: 4,
+  },
+  dot: {
+    width: 20,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#000",
+    opacity: 0.3,
+  },
+  dotIndicator: {
+    width: 20,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#fff",
+    position: "absolute",
+    opacity: 1,
   },
 });
